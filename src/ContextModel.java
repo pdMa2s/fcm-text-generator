@@ -1,5 +1,4 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class ContextModel {
 
@@ -26,6 +25,25 @@ public abstract class ContextModel {
         }
     }
 
+    public int getOrder() {
+        return order;
+    }
+
+    public List<String> getTerms(){
+        if (order == 0){
+            return Arrays.asList(ALPHABET);
+        }
+        List<String> terms = new ArrayList<>();
+        for(Map.Entry<String,Integer[]> entry: multiDimensionalModel.entrySet()){
+            terms.add(entry.getKey());
+        }
+        return terms;
+    }
+
+    public int[] getTermNrOfOcurrences(String term){
+        //implement
+        return null;
+    }
     protected void createUniDimensionalModel(){
         for(int i = 0; i< textModel.length()-1; i++ ){
             char followingChar = textModel.charAt(i+1);
@@ -68,7 +86,7 @@ public abstract class ContextModel {
 
     @Override
     public String toString() {
-        if(uniDimensionalModel == null)
+        if(order >= 1)
             return multiDimensionalModel.toString();
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < ALPHABET.length(); i++){
