@@ -1,19 +1,20 @@
 import java.util.*;
 
-public abstract class ContextModel {
+public class ContextModel {
 
-    private Map<String, Integer[]> multiDimensionalModel;
-    private Integer[] uniDimensionalModel;
+    private Map<String, Map<Character, Integer>> multiDimensionalModel;
+    private Map<Character, Integer> uniDimensionalModel;
     private int order;
     private String textModel;
-    protected static String ALPHABET;
+    private Set<String> dictionary;
 
     public ContextModel(int order, String textModel){
         this.order = order;
         this.textModel = textModel;
+        this.dictionary = new TreeSet<>();
         switch (order){
             case 0:
-                this.uniDimensionalModel = new Integer[ALPHABET.length()];
+                this.uniDimensionalModel = new HashMap<>();
                 createUniDimensionalModel();
                 break;
             case 1:
@@ -29,25 +30,19 @@ public abstract class ContextModel {
         return order;
     }
 
-    public List<String> getTerms(){
-        if (order == 0){
-            return Arrays.asList(ALPHABET);
-        }
-        List<String> terms = new ArrayList<>();
-        for(Map.Entry<String,Integer[]> entry: multiDimensionalModel.entrySet()){
-            terms.add(entry.getKey());
-        }
-        return terms;
+
+    public  Map<Character, Integer> getOcurrencesAfterTerm(String term){
+        return uniDimensionalModel == null ? multiDimensionalModel.get(term) : uniDimensionalModel;
     }
 
-    public int[] getTermNrOfOcurrences(String term){
-        //implement
-        return null;
+    public Set<String> getDictionary(){
+        return dictionary;
     }
     protected void createUniDimensionalModel(){
         for(int i = 0; i< textModel.length()-1; i++ ){
             char followingChar = textModel.charAt(i+1);
             incrementCharOcurrence(uniDimensionalModel, followingChar);
+            dictionary.add(followingChar+"");
         }
     }
 
@@ -56,46 +51,29 @@ public abstract class ContextModel {
             String term = textModel.substring(i,i+order);
             char nextChar = textModel.charAt(i+order);
             addFollowingCharOcurrence(term, nextChar);
+            dictionary.add(term);
         }
     }
 
     protected void addFollowingCharOcurrence(String term, char followingChar){
         if(multiDimensionalModel.containsKey(term)){
-            Integer[] termEntrys = multiDimensionalModel.get(term);
+            Map<Character, Integer> termEntrys = multiDimensionalModel.get(term);
             incrementCharOcurrence(termEntrys,followingChar);
         }
         else{
-            multiDimensionalModel.put(term,new Integer[ALPHABET.length()]);
-            Integer[] termEntrys = multiDimensionalModel.get(term);
+            multiDimensionalModel.put( term,new HashMap<>());
+            Map<Character, Integer> termEntrys = multiDimensionalModel.get(term);
             incrementCharOcurrence(termEntrys, followingChar);
         }
     }
-    protected void incrementCharOcurrence(Integer[] termEntrys, char c){
-        if(termEntrys[charIndex(c)] == null)
-            termEntrys[charIndex(c)] = 1;
-        else
-            termEntrys[charIndex(c)]++;
-
-    }
-    protected int charIndex(char c){
-        int temp = (int)c;
-        int temp_integer = 64; //for upper case
-        return temp-temp_integer-1;
-
-    }
-
-    @Override
-    public String toString() {
-        if(order >= 1)
-            return multiDimensionalModel.toString();
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < ALPHABET.length(); i++){
-            sb.append(ALPHABET.charAt(i)+"   ");
+    protected void incrementCharOcurrence(Map<Character,Integer> termEntrys, char c){
+        if(termEntrys.get(c) == null)
+            termEntrys.put(c,1);
+        else {
+            int nrOcurrences = termEntrys.get(c);
+            termEntrys.put(c,nrOcurrences++);
         }
-        sb.append("\n");
-        for(int i = 0; i < uniDimensionalModel.length; i++){
-            sb.append(uniDimensionalModel[i]+"   ");
-        }
-        return sb.toString();
     }
+
+
 }
