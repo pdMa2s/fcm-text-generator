@@ -1,5 +1,5 @@
 import java.io.File;
 
-public interface FileParser {
+public interface ContextFileParser {
     String parse(File file);
 }

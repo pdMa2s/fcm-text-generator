@@ -1,10 +1,8 @@
-import org.omg.CORBA.INTERNAL;
+import sun.security.pkcs11.Secmod;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class ProbabilityModel {
+public class ProbabilityModel<T,K> {
     private Map<String, Map<Character, Double>> probabilityMultiModel;
     private Map<Character, Double> probabilityUniModel;
 
@@ -27,10 +25,38 @@ public class ProbabilityModel {
 
     }
 
+    public double entropy(char caracter){
+        if(probabilityUniModel != null){
+            return rowEntropy(probabilityUniModel);
+        }
+
+        int totalContextOcurrences = contextModel.totalContextOcurrences();
+        double entropy = 0;
+        for (String term : dictionary) {
+            Map<Character, Double> row = probabilityMultiModel.get(term);
+            int totalRowOcurrences = getTotalOcurencesOfCharsAfterTerm(contextModel.getOcurrencesAfterTerm(term));
+            entropy += rowEntropy(row)*(totalRowOcurrences/totalContextOcurrences);
+        }
+        return entropy;
+    }
+
+    private double rowEntropy(Map<Character, Double> row){
+
+        double rowEntropy = 0;
+        for(Map.Entry<Character, Double> entry: row.entrySet()){
+            rowEntropy += charEntropy(entry.getValue());
+        }
+
+        return rowEntropy;
+    }
+
+    private double charEntropy(double prob){
+        return -(prob*log2(prob));
+    }
     private void fillProbabilityMultiModel(){
         for(String term : dictionary) {
             Map<Character, Integer> ocurrences = contextModel.getOcurrencesAfterTerm(term);
-            int totalOcurrences = getTotalOcurencesOfCharAfterTerm(ocurrences);
+            int totalOcurrences = getTotalOcurencesOfCharsAfterTerm(ocurrences);
             for (Map.Entry<Character, Integer> entry : ocurrences.entrySet()) {
                 fillCharProbabilities(term, entry.getKey(), totalOcurrences, entry.getValue());
             }
@@ -41,9 +67,9 @@ public class ProbabilityModel {
     private void fillProbabilityUniModel(){
         Map<Character, Integer> ocurrences = contextModel.getOcurrencesAfterTerm(null);
         for(String term : dictionary) {
-            int totalOcurrences = getTotalOcurencesOfCharAfterTerm(ocurrences);
+            int totalOcurrences = getTotalOcurencesOfCharsAfterTerm(ocurrences);
             for (Map.Entry<Character, Integer> entry : ocurrences.entrySet()) {
-                fillCharProbabilities(term, entry.getKey(), totalOcurrences, entry.getValue());
+                probabilityUniModel.put(term.charAt(0), probabilityOfAChar(totalOcurrences, entry.getValue()));
             }
         }
     }
@@ -59,7 +85,7 @@ public class ProbabilityModel {
         probabilities.put(c,probabilityOfAChar(total, nrOcurrences));
         probabilityMultiModel.put(term,probabilities);
     }
-    private int getTotalOcurencesOfCharAfterTerm(Map<Character, Integer> ocurrences){
+    private int getTotalOcurencesOfCharsAfterTerm(Map<Character, Integer> ocurrences){
         int sum = 0;
         for(Map.Entry<Character, Integer> entry : ocurrences.entrySet()){
             sum += entry.getValue();

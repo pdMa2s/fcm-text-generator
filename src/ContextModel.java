@@ -34,7 +34,22 @@ public class ContextModel {
     public  Map<Character, Integer> getOcurrencesAfterTerm(String term){
         return uniDimensionalModel == null ? multiDimensionalModel.get(term) : uniDimensionalModel;
     }
-
+    public int totalContextOcurrences(){
+        int totalOcurrences = 0;
+        if(uniDimensionalModel != null){
+            for(Character c: uniDimensionalModel.keySet()){
+                totalOcurrences += uniDimensionalModel.get(c);
+            }
+        }
+        else{
+            for(String term : multiDimensionalModel.keySet()){
+                for(Character c: multiDimensionalModel.get(term).keySet()){
+                    totalOcurrences += multiDimensionalModel.get(term).get(c);
+                }
+            }
+        }
+        return totalOcurrences;
+    }
     public Set<String> getDictionary(){
         return dictionary;
     }
