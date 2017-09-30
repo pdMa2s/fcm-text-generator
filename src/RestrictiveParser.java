@@ -9,7 +9,7 @@ public class RestrictiveParser implements ContextFileParser {
     @Override
     public String parse(File file) {
         String content = "";
-        try (Scanner scanner = new Scanner(new FileInputStream(file), "ISO-8859-1")) {
+        try (Scanner scanner = new Scanner(new FileInputStream(file), "UTF-8")) {
             StringBuilder sb = new StringBuilder();
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
