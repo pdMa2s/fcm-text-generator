@@ -14,19 +14,17 @@ public class ProbabilityModel<T,K> {
         this.dictionary = model.getDictionary();
         this.contextModel = model;
         this.alpha = alpha;
-        if(model.getOrder() > 0) {
-            probabilityMultiModel = new HashMap<>();
-            fillProbabilityMultiModel();
-        }
-        else {
-            probabilityUniModel = new HashMap<>();
-            fillProbabilityUniModel();
-        }
+        probabilityMultiModel = new HashMap<>();
+        fillProbabilityMultiModel();
+
+        probabilityUniModel = new HashMap<>();
+        fillProbabilityUniModel();
+
 
     }
 
     public double entropy(char caracter){
-        if(probabilityUniModel != null){
+        if(contextModel.getOrder() == 0){
             return rowEntropy(probabilityUniModel);
         }
 
@@ -34,7 +32,7 @@ public class ProbabilityModel<T,K> {
         double entropy = 0;
         for (String term : dictionary) {
             Map<Character, Double> row = probabilityMultiModel.get(term);
-            int totalRowOcurrences = getTotalOcurencesOfCharsAfterTerm(contextModel.getOcurrencesAfterTerm(term));
+            int totalRowOcurrences = getTotalOcurencesOfRow(contextModel.getOcurrencesForOrderHigherThanZero(term));
             entropy += rowEntropy(row)*(totalRowOcurrences/totalContextOcurrences);
         }
         return entropy;
@@ -54,9 +52,11 @@ public class ProbabilityModel<T,K> {
         return -(prob*log2(prob));
     }
     private void fillProbabilityMultiModel(){
+        System.out.println(dictionary);
         for(String term : dictionary) {
-            Map<Character, Integer> ocurrences = contextModel.getOcurrencesAfterTerm(term);
-            int totalOcurrences = getTotalOcurencesOfCharsAfterTerm(ocurrences);
+            Map<Character, Integer> ocurrences = contextModel.getOcurrencesForOrderHigherThanZero(term);
+            System.out.println(term);
+            int totalOcurrences = getTotalOcurencesOfRow(ocurrences);
             for (Map.Entry<Character, Integer> entry : ocurrences.entrySet()) {
                 fillCharProbabilities(term, entry.getKey(), totalOcurrences, entry.getValue());
             }
@@ -65,9 +65,9 @@ public class ProbabilityModel<T,K> {
     }
 
     private void fillProbabilityUniModel(){
-        Map<Character, Integer> ocurrences = contextModel.getOcurrencesAfterTerm(null);
+        Map<Character, Integer> ocurrences = contextModel.getOcurrencesForOrderEqualToZero();
         for(String term : dictionary) {
-            int totalOcurrences = getTotalOcurencesOfCharsAfterTerm(ocurrences);
+            int totalOcurrences = getTotalOcurencesOfRow(ocurrences);
             for (Map.Entry<Character, Integer> entry : ocurrences.entrySet()) {
                 probabilityUniModel.put(term.charAt(0), probabilityOfAChar(totalOcurrences, entry.getValue()));
             }
@@ -85,7 +85,7 @@ public class ProbabilityModel<T,K> {
         probabilities.put(c,probabilityOfAChar(total, nrOcurrences));
         probabilityMultiModel.put(term,probabilities);
     }
-    private int getTotalOcurencesOfCharsAfterTerm(Map<Character, Integer> ocurrences){
+    private int getTotalOcurencesOfRow(Map<Character, Integer> ocurrences){
         int sum = 0;
         for(Map.Entry<Character, Integer> entry : ocurrences.entrySet()){
             sum += entry.getValue();
@@ -106,4 +106,14 @@ public class ProbabilityModel<T,K> {
         return Math.log(a) / Math.log(b);
     }
 
+    @Override
+    public String toString(){
+        if(contextModel.getOrder() == 0)
+            return probabilityUniModel.toString();
+        StringBuilder sb = new StringBuilder();
+        for(String k : probabilityMultiModel.keySet()){
+            sb.append(k+":"+probabilityMultiModel.get(k)+"\n");
+        }
+        return sb.toString();
+    }
 }
