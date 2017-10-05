@@ -27,6 +27,13 @@ public class ContextModel {
         return order;
     }
 
+    public Set<String> getTermsForOrderHigherThanZero(){
+        return multiDimensionalModel.keySet();
+    }
+
+    public Set<Character> getTermsForOrderEqualToZero(){
+        return uniDimensionalModel.keySet();
+    }
 
     public  Map<Character, Integer> getOcurrencesForOrderHigherThanZero(String term){
         return multiDimensionalModel.get(term);

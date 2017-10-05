@@ -1,4 +1,3 @@
-import sun.security.pkcs11.Secmod;
 
 import java.util.*;
 
@@ -52,8 +51,7 @@ public class ProbabilityModel<T,K> {
         return -(prob*log2(prob));
     }
     private void fillProbabilityMultiModel(){
-        System.out.println(dictionary);
-        for(String term : dictionary) {
+        for(String term : contextModel.getTermsForOrderHigherThanZero()) {
             Map<Character, Integer> ocurrences = contextModel.getOcurrencesForOrderHigherThanZero(term);
             System.out.println(term);
             int totalOcurrences = getTotalOcurencesOfRow(ocurrences);
@@ -66,10 +64,10 @@ public class ProbabilityModel<T,K> {
 
     private void fillProbabilityUniModel(){
         Map<Character, Integer> ocurrences = contextModel.getOcurrencesForOrderEqualToZero();
-        for(String term : dictionary) {
-            int totalOcurrences = getTotalOcurencesOfRow(ocurrences);
+        int totalOcurrences = getTotalOcurencesOfRow(ocurrences);
+        for(Character term : ocurrences.keySet()) {
             for (Map.Entry<Character, Integer> entry : ocurrences.entrySet()) {
-                probabilityUniModel.put(term.charAt(0), probabilityOfAChar(totalOcurrences, entry.getValue()));
+                probabilityUniModel.put(term, probabilityOfAChar(totalOcurrences, entry.getValue()));
             }
         }
     }
