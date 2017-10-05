@@ -1,7 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -33,7 +31,7 @@ public class TextGenerator {
                 if (probabilityMultiModel.containsKey(term))
                     text += getNextChar(probabilityMultiModel.get(term));
                 else
-                    text += getNextChar();
+                    text += getNextChar(probabilityUniModel);
             }
             return text;
         }
@@ -42,7 +40,7 @@ public class TextGenerator {
                     map(key->key.toString()).collect(Collectors.toList()));
             text = getInitialTermOrCharacter(keys);
             while (text.length() < lengthText) {
-                text += getNextChar();
+                text += getNextChar(probabilityUniModel);
             }
             return text;
         }
@@ -54,13 +52,13 @@ public class TextGenerator {
         int startElement = random.nextInt(size);
         return keys.get(startElement);
     }
-
-    private char getNextChar() {
+    
+    private char getNextChar(Map<Character, Double> probabilityModel) {
         Random random = new Random();
         double numberToCompare = random.nextDouble();
         double total = 0;
         char nextChar = 0;
-        for(Map.Entry<Character,Double> entry:probabilityUniModel.entrySet()) {
+        for(Map.Entry<Character,Double> entry:probabilityModel.entrySet()) {
             total += entry.getValue();
             if (total >= numberToCompare) {
                 nextChar = entry.getKey();
@@ -68,15 +66,6 @@ public class TextGenerator {
             }
         }
         return nextChar;
-    }
-    
-    private char getNextChar(Map<Character, Double> probabilityModel) {
-        Map<Character, Double> sorted = probabilityModel.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (e1, e2) -> e1, LinkedHashMap::new));     
-        Map.Entry<Character,Double> entry=sorted.entrySet().iterator().next();
-        return entry.getKey();
     }
 
 }
