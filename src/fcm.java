@@ -16,11 +16,11 @@ public class fcm {
         ContextFileParser parser= new RestrictiveParser();
 
         String context = parser.parse(contextFile);
-        System.out.println(context);
+
         contextModel = new ContextModel(order, context);
-        //System.out.println(contextModel);
         ProbabilityModel probabilityModel = new ProbabilityModel(contextModel, alpha);
         System.out.println(probabilityModel);
+
     }
 
 

@@ -6,20 +6,21 @@ public class ContextModel {
     private Map<Character, Integer> uniDimensionalModel;
     private int order;
     private String textModel;
-    private Set<String> dictionary;
+    private Set<Character> alphabet;
 
     public ContextModel(int order, String textModel){
         this.order = order;
         this.textModel = textModel;
-        this.dictionary = new TreeSet<>();
+        this.alphabet = new TreeSet<>();
         if(order < 0)
             throw new IllegalArgumentException("The order can't be less than zero");
 
         this.uniDimensionalModel = new HashMap<>();
         createUniDimensionalModel();
-
-        this.multiDimensionalModel = new HashMap<>();
-        createMultiDimensionalModel();
+        if(order > 0){
+            this.multiDimensionalModel = new HashMap<>();
+            createMultiDimensionalModel();
+        }
 
     }
 
@@ -57,14 +58,15 @@ public class ContextModel {
         }
         return totalOcurrences;
     }
-    public Set<String> getDictionary(){
-        return dictionary;
+    public Set<Character> getAlphabet()
+    {
+        return alphabet;
     }
     protected void createUniDimensionalModel(){
         for(int i = 0; i< textModel.length()-1; i++ ){
             char followingChar = textModel.charAt(i+1);
             incrementCharOcurrence(uniDimensionalModel, followingChar);
-            dictionary.add(followingChar+"");
+            alphabet.add(followingChar);
         }
     }
 
