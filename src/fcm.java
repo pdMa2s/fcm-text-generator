@@ -19,8 +19,9 @@ public class fcm {
 
         contextModel = new ContextModel(order, context);
         ProbabilityModel probabilityModel = new ProbabilityModel(contextModel, alpha);
-        System.out.println(probabilityModel);
+        //System.out.println(probabilityModel);
 
+        System.out.println(probabilityModel.entropy());
     }
 
 
