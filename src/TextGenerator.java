@@ -12,13 +12,14 @@ public class TextGenerator {
     private ProbabilityModel probabilityModel;
     private int lengthText;
     private int order;
-    private String text;
+    private StringBuilder text;
     private Map<String, Map<Character, Double>> probabilityMultiModel;
     private Map<Character, Double> probabilityUniModel;
     
     public TextGenerator(ProbabilityModel probabilityModel, int lengthText) {
         this.probabilityModel = probabilityModel;
         this.lengthText = lengthText;
+        this.text = new StringBuilder();
         this.order = this.probabilityModel.getOrder();
         probabilityMultiModel = this.probabilityModel.getProbabilityMultiModel();
         probabilityUniModel = this.probabilityModel.getProbabilityUniModel();
@@ -27,24 +28,24 @@ public class TextGenerator {
     public String generateText() {
         if (order > 0) {
             List<String> keys = new ArrayList<>(probabilityMultiModel.keySet());
-            text = getInitialTermOrCharacter(keys);
+            text.append(getInitialTermOrCharacter(keys));
             while (text.length() < lengthText) {
                 String term = text.substring(text.length()-order);
                 if (probabilityMultiModel.containsKey(term))
-                    text += getNextChar(probabilityMultiModel.get(term));
+                    text.append(getNextChar(probabilityMultiModel.get(term)));
                 else
-                    text += getNextChar();
+                    text.append(getNextChar());
             }
-            return text;
+            return text.toString();
         }
         else {
             List<String> keys = new ArrayList<>(probabilityUniModel.keySet().stream().
                     map(key->key.toString()).collect(Collectors.toList()));
-            text = getInitialTermOrCharacter(keys);
+            text.append(getInitialTermOrCharacter(keys));
             while (text.length() < lengthText) {
-                text += getNextChar();
+                text.append(getNextChar());
             }
-            return text;
+            return text.toString();
         }
     }
 

@@ -1,6 +1,5 @@
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ProbabilityModel {
     private Map<String, Map<Character, Double>> probabilityMultiModel;
@@ -13,6 +12,8 @@ public class ProbabilityModel {
     public ProbabilityModel(ContextModel model, double alpha){
         this.alphabet = model.getAlphabet();
         this.contextModel = model;
+        if(alpha < 0)
+            throw new IllegalArgumentException("Alpha cant be less than zero");
         this.alpha = alpha;
 
         probabilityUniModel = new HashMap<>();
@@ -107,7 +108,7 @@ public class ProbabilityModel {
         return Math.log(a) / Math.log(b);
     }
     
-        public Map<String, Map<Character, Double>> getProbabilityMultiModel() {
+    public Map<String, Map<Character, Double>> getProbabilityMultiModel() {
         return probabilityMultiModel;
     }
 
