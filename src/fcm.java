@@ -23,6 +23,10 @@ public class fcm {
         //System.out.println(probabilityModel);
 
         System.out.println(probabilityModel.entropy());
+        
+        TextGenerator textGenerator = new TextGenerator(probabilityModel, 100);
+        String text = textGenerator.generateText();
+        System.out.println(text);
     }
 
     private static void checkParameterLength(String[] args){
