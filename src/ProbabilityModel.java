@@ -1,5 +1,6 @@
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProbabilityModel {
     private Map<String, Map<Character, Double>> probabilityMultiModel;
@@ -104,6 +105,18 @@ public class ProbabilityModel {
     private double logb( double a, double b )
     {
         return Math.log(a) / Math.log(b);
+    }
+    
+        public Map<String, Map<Character, Double>> getProbabilityMultiModel() {
+        return probabilityMultiModel;
+    }
+
+    public Map<Character, Double> getProbabilityUniModel() {
+        return probabilityUniModel;
+    }
+    
+    public int getOrder() {
+        return contextModel.getOrder();
     }
 
     @Override

@@ -3,11 +3,7 @@
     <type>org.netbeans.modules.java.j2seproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
-<<<<<<< HEAD
-            <name>tai-2017-2018-proj1</name>
-=======
             <name>tai-2017-2018</name>
->>>>>>> 578a0ed75656075ce3e0c83cc4142d7a5081531b
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>
