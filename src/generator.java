@@ -60,13 +60,13 @@ public class generator {
         return null;
     }
     private static void printUsage(){
-        System.out.println("USAGE: java fcm <contextFile> <order> <alpha> <parserType>(Optional)\n"+
+        System.out.println("USAGE: java generator <contextFile> <order> <alpha> <genTextLength> <parserType>(Optional)\n"+
                             "<contextFile> - The which contains the context model\n"+
                             "<order> - The order of the finite-context model\n"+
                             "<alpha> - The level of creativity of the text generator\n"+
                             "<lengthText> - The size of the text generated\n"+
                             "<parserType> - This parameter is optional, chose a type of parser for the context file\n"+
-                            "lp - A Liberal that does not filter the input text"+
+                            "lp - A Liberal that does not filter the input text\n"+
                             "rp - A Restrictive parser that removes some punctuation, all the text is upper case. This is the parser used by default"
                             );
         System.exit(1);
