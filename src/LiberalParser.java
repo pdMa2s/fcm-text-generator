@@ -11,7 +11,7 @@ public class LiberalParser implements ContextFileParser{
             StringBuilder sb = new StringBuilder();
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                sb.append(line);
+                sb.append(line.trim());
                 sb.append("\n");
             }
             sb.setLength(sb.length() - 1);

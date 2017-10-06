@@ -12,18 +12,19 @@ public class ProbabilityModel {
     public ProbabilityModel(ContextModel model, double alpha){
         this.alphabet = model.getAlphabet();
         this.contextModel = model;
+        this.alphabet = model.getAlphabet();
         if(alpha < 0)
             throw new IllegalArgumentException("Alpha cant be less than zero");
         this.alpha = alpha;
 
-        probabilityUniModel = new HashMap<>();
-        fillProbabilityUniModel();
-
-        if(model.getOrder() > 0){
+        if (contextModel.getOrder() == 0) {
+            probabilityUniModel = new HashMap<>();
+            fillProbabilityUniModel();
+        }
+        else{
             probabilityMultiModel = new HashMap<>();
             fillProbabilityMultiModel();
         }
-
     }
 
     public double entropy(){
@@ -36,6 +37,7 @@ public class ProbabilityModel {
         for(String term : probabilityMultiModel.keySet()) {
             Map<Character, Double> row = probabilityMultiModel.get(term);
             int totalRowOcurrences = getTotalOcurencesOfRow(contextModel.getOcurrencesForOrderHigherThanZero(term));
+
             entropy += rowEntropy(row)*((float)totalRowOcurrences/(float) totalContextOcurrences);
         }
         return entropy;
@@ -51,11 +53,12 @@ public class ProbabilityModel {
     }
 
     private double charEntropy(double prob){
-        return -(prob*log2(prob));
+        return prob == 0 ? 0 : -(prob*log2(prob));
     }
 
     private void fillProbabilityMultiModel(){
         for(String term : contextModel.getTermsForOrderHigherThanZero()) {
+
             Map<Character, Integer> ocurrences = contextModel.getOcurrencesForOrderHigherThanZero(term);
             int totalOcurrences = getTotalOcurencesOfRow(ocurrences);
             for (char c : alphabet) {

@@ -12,15 +12,20 @@ public class ContextModel {
         this.order = order;
         this.textModel = textModel;
         this.alphabet = new TreeSet<>();
+
         if(order < 0)
             throw new IllegalArgumentException("The order can't be less than zero");
 
-        this.uniDimensionalModel = new HashMap<>();
-        createUniDimensionalModel();
-        if(order > 0){
-            this.multiDimensionalModel = new HashMap<>();
-            createMultiDimensionalModel();
+        if(order == 0){
+            this.uniDimensionalModel = new HashMap<>();
+            createUniDimensionalModel();
+
         }
+        else{
+            this.multiDimensionalModel = new HashMap<>();
+            createMultiDimensionalModel(order);
+        }
+
 
     }
 
@@ -70,11 +75,12 @@ public class ContextModel {
         }
     }
 
-    protected void createMultiDimensionalModel(){
-        for (int i = 0; i < textModel.length() - order; i += order){
+    protected void createMultiDimensionalModel(int order){
+        for (int i = 0; i < textModel.length() - order; i++){
             String term = textModel.substring(i,i+order);
             char nextChar = textModel.charAt(i+order);
             addFollowingCharOcurrence(term, nextChar);
+            alphabet.add(nextChar);
         }
     }
 

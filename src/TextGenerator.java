@@ -1,7 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -14,15 +12,29 @@ public class TextGenerator {
     private int order;
     private StringBuilder text;
     private Map<String, Map<Character, Double>> probabilityMultiModel;
+    private Map<String, Map<Character, Double>> probabilityMultiModelBackup;
     private Map<Character, Double> probabilityUniModel;
     
-    public TextGenerator(ProbabilityModel probabilityModel, int lengthText) {
+    public TextGenerator(ProbabilityModel probabilityModel,int lengthText) {
+        if(lengthText <= 0){
+            throw new IllegalArgumentException("ERROR The length of the text cant be less or equal to zero");
+        }
         this.probabilityModel = probabilityModel;
         this.lengthText = lengthText;
         this.text = new StringBuilder();
         this.order = this.probabilityModel.getOrder();
-        probabilityMultiModel = this.probabilityModel.getProbabilityMultiModel();
-        probabilityUniModel = this.probabilityModel.getProbabilityUniModel();
+        if(order > 0){
+            probabilityMultiModel = this.probabilityModel.getProbabilityMultiModel();
+        }
+        else{
+            probabilityUniModel = this.probabilityModel.getProbabilityUniModel();
+        }
+    }
+    public TextGenerator(ProbabilityModel probabilityModel,ProbabilityModel probabilityModelBackup,int lengthText) {
+        this(probabilityModel, lengthText);
+        this.probabilityMultiModelBackup = probabilityModelBackup.getProbabilityMultiModel();
+        //System.out.println(probabilityModelBackup);
+
     }
     
     public String generateText() {
@@ -31,22 +43,29 @@ public class TextGenerator {
             text.append(getInitialTermOrCharacter(keys));
             while (text.length() < lengthText) {
                 String term = text.substring(text.length()-order);
-                if (probabilityMultiModel.containsKey(term))
+                if (probabilityMultiModel.containsKey(term)){
                     text.append(getNextChar(probabilityMultiModel.get(term)));
-                else
-                    text.append(getNextChar());
+                }
+                else{
+                    String c;
+                    c = term.charAt(term.length()-1)+"";
+                    text.append(getNextChar(probabilityMultiModelBackup.get(c)));
+                }
             }
             return text.toString();
         }
         else {
-            List<String> keys = new ArrayList<>(probabilityUniModel.keySet().stream().
-                    map(key->key.toString()).collect(Collectors.toList()));
-            text.append(getInitialTermOrCharacter(keys));
-            while (text.length() < lengthText) {
-                text.append(getNextChar());
-            }
-            return text.toString();
+            return generateTextForUniModel();
         }
+    }
+    private String generateTextForUniModel(){
+        List<String> keys = new ArrayList<>(probabilityUniModel.keySet().stream().
+                map(key->key.toString()).collect(Collectors.toList()));
+        text.append(getInitialTermOrCharacter(keys));
+        while (text.length() < lengthText) {
+            text.append(getNextChar(probabilityUniModel));
+        }
+        return text.toString();
     }
 
     private String getInitialTermOrCharacter(List<String> keys) {
@@ -55,13 +74,13 @@ public class TextGenerator {
         int startElement = random.nextInt(size);
         return keys.get(startElement);
     }
-
-    private char getNextChar() {
+    
+    private char getNextChar(Map<Character, Double> probabilityModel) {
         Random random = new Random();
         double numberToCompare = random.nextDouble();
         double total = 0;
         char nextChar = 0;
-        for(Map.Entry<Character,Double> entry:probabilityUniModel.entrySet()) {
+        for(Map.Entry<Character,Double> entry:probabilityModel.entrySet()) {
             total += entry.getValue();
             if (total >= numberToCompare) {
                 nextChar = entry.getKey();
@@ -69,15 +88,6 @@ public class TextGenerator {
             }
         }
         return nextChar;
-    }
-    
-    private char getNextChar(Map<Character, Double> probabilityModel) {
-        Map<Character, Double> sorted = probabilityModel.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (e1, e2) -> e1, LinkedHashMap::new));     
-        Map.Entry<Character,Double> entry=sorted.entrySet().iterator().next();
-        return entry.getKey();
     }
 
 }
