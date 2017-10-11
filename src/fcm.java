@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.Scanner;
 
 public class fcm {
 
@@ -14,15 +15,19 @@ public class fcm {
         else
             parser = new LiberalParser();
 
+        Scanner sc = new Scanner(System.in);
         ContextModel contextModel;
         String context = parser.parse(contextFile);
         //System.out.println(context);
         contextModel = new ContextModel(order, context);
-        System.out.println(contextModel);
         ProbabilityModel probabilityModel;
         probabilityModel = new ProbabilityModel(contextModel, alpha);
-        //System.out.println(probabilityModel);
+
         System.out.println("Entropy: " + probabilityModel.entropy());
+        System.out.println("Print probability table?(y/n)");
+        String answer = sc.next();
+        if(answer.equals("y") || answer.equals("yes"))
+            System.out.println(probabilityModel);
     }
 
     private static void checkParameterLength(String[] args){

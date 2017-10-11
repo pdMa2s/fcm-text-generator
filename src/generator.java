@@ -17,14 +17,13 @@ public class generator {
             parser = new LiberalParser();
         String context = parser.parse(contextFile);
 
-
         ContextModel contextModel = new ContextModel(order, context);
         ProbabilityModel probabilityModel = new ProbabilityModel(contextModel, alpha);
         ContextModel contextModelBackup;
-        ProbabilityModel probabilityModelBackup= null;
+        ProbabilityModel probabilityModelBackup;
         if(order > 0){
             if(order == 1)
-             contextModelBackup = new ContextModel(0, context);
+                contextModelBackup = new ContextModel(0, context);
             else
                 contextModelBackup = new ContextModel(1, context);
             probabilityModelBackup = new ProbabilityModel(contextModelBackup, alpha);
@@ -32,8 +31,6 @@ public class generator {
         }
         else
             generator = new TextGenerator(probabilityModel, genLength);
-        //System.out.println(probabilityModel);
-        //System.out.println(probabilityModelBackup);
         System.out.println(generator.generateText());
 
     }

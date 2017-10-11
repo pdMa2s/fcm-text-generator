@@ -14,7 +14,9 @@ public class TextGenerator {
     private Map<String, Map<Character, Double>> probabilityMultiModel;
     private Map<String, Map<Character, Double>> probabilityMultiModelBackup;
     private Map<Character, Double> probabilityUniModel;
-    
+    private Map<Character, Double> probabilityUniModelBackup;
+
+
     public TextGenerator(ProbabilityModel probabilityModel,int lengthText) {
         if(lengthText <= 0){
             throw new IllegalArgumentException("ERROR The length of the text cant be less or equal to zero");
@@ -32,8 +34,10 @@ public class TextGenerator {
     }
     public TextGenerator(ProbabilityModel probabilityModel,ProbabilityModel probabilityModelBackup,int lengthText) {
         this(probabilityModel, lengthText);
-        this.probabilityMultiModelBackup = probabilityModelBackup.getProbabilityMultiModel();
-        //System.out.println(probabilityModelBackup);
+        if(probabilityModelBackup.getOrder() == 0)
+            this.probabilityUniModelBackup = probabilityModelBackup.getProbabilityUniModel();
+        else
+            this.probabilityMultiModelBackup = probabilityModelBackup.getProbabilityMultiModel();
 
     }
     
@@ -47,9 +51,7 @@ public class TextGenerator {
                     text.append(getNextChar(probabilityMultiModel.get(term)));
                 }
                 else{
-                    String c;
-                    c = term.charAt(term.length()-1)+"";
-                    text.append(getNextChar(probabilityMultiModelBackup.get(c)));
+                    text.append(getBackupChar(term));
                 }
             }
             return text.toString();
@@ -57,6 +59,14 @@ public class TextGenerator {
         else {
             return generateTextForUniModel();
         }
+    }
+    private char getBackupChar(String term){
+        char c;
+        c = term.charAt(term.length()-1);
+        if(probabilityUniModelBackup == null)
+            return getNextChar(probabilityMultiModelBackup.get(c+""));
+        else
+            return getNextChar(probabilityUniModelBackup);
     }
     private String generateTextForUniModel(){
         List<String> keys = new ArrayList<>(probabilityUniModel.keySet().stream().

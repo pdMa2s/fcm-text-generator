@@ -12,9 +12,9 @@ public class ProbabilityModel {
     public ProbabilityModel(ContextModel model, double alpha){
         this.alphabet = model.getAlphabet();
         this.contextModel = model;
-        this.alphabet = model.getAlphabet();
-        if(alpha < 0)
-            throw new IllegalArgumentException("Alpha cant be less than zero");
+
+        if(alpha < 0 || alpha > 1)
+            throw new IllegalArgumentException("Alpha cant be less than zero or greater than one");
         this.alpha = alpha;
 
         if (contextModel.getOrder() == 0) {
