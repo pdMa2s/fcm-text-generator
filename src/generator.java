@@ -31,8 +31,11 @@ public class generator {
         }
         else
             generator = new TextGenerator(probabilityModel, genLength);
-        System.out.println(generator.generateText());
-
+        String generateText = generator.generateText();
+        System.out.println(generateText);
+        contextModel = new ContextModel(order, generateText);
+        probabilityModel = new ProbabilityModel(contextModel, alpha);
+        System.out.println("Entropy of the generated text: " + probabilityModel.entropy());
     }
 
     private static void checkParameter(String[] args){
