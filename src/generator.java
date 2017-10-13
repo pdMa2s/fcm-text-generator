@@ -35,7 +35,9 @@ public class generator {
         System.out.println(generateText);
         contextModel = new ContextModel(order, generateText);
         probabilityModel = new ProbabilityModel(contextModel, alpha);
+        System.out.println("\n---End of the generated text---");
         System.out.println("Entropy of the generated text: " + probabilityModel.entropy());
+        System.out.println("Size of the alphabet: " + contextModel.getAlphabet().size());
     }
 
     private static void checkParameter(String[] args){
