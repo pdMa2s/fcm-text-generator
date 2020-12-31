@@ -1,7 +1,9 @@
 # fcm-text-generator
 
 University of Aveiro
+
 Departamento de Electrónica, Telecomunicações e Informática
+
 MEI
 
 This work was developed for course of **Algorithmic Information Theory** (2017/2018).
